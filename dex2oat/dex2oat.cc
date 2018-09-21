@@ -1679,6 +1679,12 @@ class Dex2Oat FINAL {
 
     dex_files_ = MakeNonOwningPointerVector(opened_dex_files_);
 
+    std::string boot_reason("boot");
+    if (compilation_reason_ == boot_reason) {
+      LOG(INFO) << "not first boot, downgrading to assume-verified";
+      compiler_options_->SetCompilerFilter(CompilerFilter::kAssumeVerified);
+    }
+
     // If we need to downgrade the compiler-filter for size reasons.
     if (!IsBootImage() && IsVeryLarge(dex_files_)) {
       // Disable app image to make sure dex2oat unloading is enabled.
